@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Pro Video - आवाज़ को प्रोफेशनल वीडियो में बदलें</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b, #ff7e5f);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .floating { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+                🎙️ Voice to <span class="text-yellow-400">Pro Video</span>
+            </h1>
+            <p class="text-xl text-white/80 max-w-2xl mx-auto">
+                अपनी आवाज़ को प्रोफेशनल एडिटेड वीडियो में बदलें - बस 1 मिनट में!
+            </p>
+        </header>
+
+        <!-- Main App -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Left Panel - Controls -->
+            <div class="space-y-6">
+                <!-- Record Section -->
+                <div class="glass-effect rounded-3xl p-8">
+                    <h2 class="text-2xl font-semibold text-white mb-6">🎤 अपनी आवाज़ रिकॉर्ड करें</h2>
+                    
+                    <div class="record-btn-container relative">
+                        <button id="recordBtn" class="record-btn w-24 h-24 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white text-2xl font-bold shadow-2xl hover:scale-110 transition-all duration-300 mx-auto block floating">
+                            🎤
+                        </button>
+                        <div id="recordingIndicator" class="hidden absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <p id="recordStatus" class="text-white/70 text-lg font-medium"></p>
+                        <div id="timer" class="text-2xl font-bold text-yellow-400 mt-2"></div>
+                    </div>
+
+                    <!-- Audio Waveform -->
+                    <canvas id="waveform" class="w-full h-20 bg-white/10 rounded-2xl mt-6 hidden"></canvas>
+                </div>
+
+                <!-- Customization -->
+                <div class="glass-effect rounded-3xl p-8">
+                    <h3 class="text-xl font-semibold text-white mb-6">✨ वीडियो कस्टमाइज़ करें</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <label class="block text-white/80 mb-2">🎨 Background</label>
+                            <select id="bgStyle" class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                <option value="gradient">Gradient</option>
+                                <option value="particles">Particles</option>
+                                <option value="waves">Ocean Waves</option>
+                                <option value="abstract">Abstract</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white/80 mb-2">🎭 Avatar</label>
+                            <select id="avatarStyle" class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                <option value="professional">Professional</option>
+                                <option value="cartoon">Cartoon</option>
+                                <option value="anime">Anime</option>
+                                <option value="realistic">Realistic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <label class="block text-white/80">📝 सबटाइटल स्पीड</label>
+                        <input type="range" id="subtitleSpeed" min="0.5" max="2" step="0.1" value="1" class="w-full h-2 bg-white/30 rounded-lg appearance-none cursor-pointer accent-yellow-400">
+                        <span id="speedValue" class="text-yellow-400 font-medium">1.0x</span>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button id="generateBtn" class="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white py-6 rounded-3xl text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300 shimmer hidden">
+                    🚀 वीडियो बनाएं (30 सेकंड)
+                </button>
+            </div>
+
+            <!-- Right Panel - Preview -->
+            <div class="glass-effect rounded-3xl p-8 h-[500px] flex items-center justify-center">
+                <div id="previewArea" class="w-full h-full rounded-2xl overflow-hidden bg-black/20 flex items-center justify-center">
+                    <div class="text-center text-white/50">
+                        <div class="text-6xl mb-4">📱</div>
+                        <p>यहाँ आपकी प्रीव्यू दिखेगी</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div id="downloadSection" class="glass-effect rounded-3xl p-8 mt-12 hidden mx-auto max-w-2xl">
+            <h3 class="text-3xl font-bold text-white text-center mb-8">✅ आपका प्रोफेशनल वीडियो तैयार!</h3>
+            <video id
